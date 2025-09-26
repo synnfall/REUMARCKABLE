@@ -1,10 +1,10 @@
 from .Object import MoveableObject, Collideable
 
 class Entity(MoveableObject, Collideable):
-    def willCollideWhen(self, c: Collideable) -> tuple[float, float]:
+    def willCollideWhen(self, c: Collideable) -> tuple[tuple[float, float], tuple[float, float]]:
         """
-        Renvoie les coordonnées auquelles l'entité et le Collideable entrereont en collision.
-        Renvoie (-1, -1) si il n'y a pas de collision
+        Renvoie les coordonnées auquelles l'entité et le Collideable entrereont en collision et sortiront de leur collision durant le mouvement de l'entité.
+        Renvoie ( (-1, -1), (-1, -1) ) si il n'y a pas de collision
         """
         t_xEnter: float
         t_xOut: float
@@ -37,7 +37,7 @@ class Entity(MoveableObject, Collideable):
             t_yEnter = min(A, B)
             t_yOut = max(A,B)
 
-        res = (-1, -1)
+        res = ( (-1, -1), (-1, -1) )
 
         t_enter: float = max(t_xEnter, t_yEnter)
         t_out: float = min(t_xOut, t_yOut)
@@ -49,10 +49,15 @@ class Entity(MoveableObject, Collideable):
             t_out = 1
 
         if 0 <= t_enter and t_enter <= t_out and t_out <= 1:
-            
             res = (
-                self.x + t_enter * self.xMove,
-                self.y + t_enter * self.yMove
+                (
+                    self.x + t_enter * self.xMove,
+                    self.y + t_enter * self.yMove
+                ),
+                (
+                    self.x + t_out * self.xMove,
+                    self.y + t_out * self.yMove
+                )
             )
 
         return res
