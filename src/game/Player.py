@@ -41,6 +41,9 @@ class Player(Entity):
         else:
             self.xMove = possibleMovement[0]
             self.yMove = possibleMovement[1]
+        
+        if self.yMove < 0:
+            self.isJumping = True
         super().move()
     
     def show(self):
