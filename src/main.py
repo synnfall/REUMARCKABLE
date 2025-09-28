@@ -43,6 +43,7 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.dict["unicode"] == "v":
                 activePlayer = p if activePlayer != p else phantom
+                phantom.switchActive()
 
     #if keyPressedMap[pygame.K_z]:
     #    activePlayer.yMove += 5
@@ -58,6 +59,7 @@ while running:
     p.applyGravity()
     phantom.applyGravity()
     p.move()
+    phantom.goBack()
     phantom.move()
 
     screen.fill("white")
