@@ -55,7 +55,7 @@ class Player(Entity):
                 self.yMove = futureYMove
             else:
                 self.xMove = 0
-                self.yMove = 0
+                self.yMove = futureYMove # priorité à la gravité
         else:
             self.xMove = possibleMovement[0]
             self.yMove = possibleMovement[1]
