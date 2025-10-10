@@ -2,19 +2,31 @@ from math import floor, ceil
 
 from engine.Object import Collideable
 from engine.Entity import Entity
+
+import pygame.draw as draw
+from pygame.surface import Surface
+from pygame.rect import Rect
+from pygame.color import Color
+
 class Player(Entity):
     collideableList: list[Collideable]
     jumpStep: list[int] = []
     isJumping: bool = False
     i: int = 0
 
-    def __init__(self, x: int, y: int, width: int, height: int, collideableList: list[Collideable]) -> None:
+    color: Color
+    drawSurface: Surface
+
+    def __init__(self, x: int, y: int, width: int, height: int, collideableList: list[Collideable], color: Color, drawSurface: Surface) -> None:
         self.x = x
         self.y = y
         self.width = width
         self.height = height
 
         self.collideableList = collideableList
+
+        self.color = color
+        self.drawSurface = drawSurface
     
     def jump(self):
         if not self.isJumping:
@@ -31,12 +43,12 @@ class Player(Entity):
 
         possibleMovement = self.evaluateMovement(self.xMove, self.yMove)
         if possibleMovement == (0, 0):
-
             futureXMove = self.evaluateMovement(self.xMove, 0)[0]
             futureYMove = self.evaluateMovement(0, self.yMove)[1]
             self.xMove = futureXMove
             if self.yMove != 0 and futureYMove == 0:
                 self.isJumping = False
+                self.jumpStep = []
             self.yMove = futureYMove
         else:
             self.xMove = possibleMovement[0]
@@ -47,6 +59,7 @@ class Player(Entity):
         super().move()
     
     def show(self):
+        draw.rect(self.drawSurface, self.color, Rect(self.x, self.drawSurface.get_height() - self.y - self.height, self.width, self.height))
         return
     
     def evaluateMovement(self, xMove: int, yMove: int) -> tuple[int,int]:

@@ -2,6 +2,7 @@
 import pygame
 from pygame.surface import Surface
 from pygame.rect import Rect
+from pygame.color import Color
 
 from engine.Object import Collideable
 from game.Colliders import RectangleCollider
@@ -21,16 +22,16 @@ running = True
 
 colliders: list[Collideable] = []
 
-sol1: RectangleCollider = RectangleCollider(0, 200, screenWidth, 50)
+sol1: RectangleCollider = RectangleCollider(0, 200, screenWidth, 50, Color(0,255,0), screen)
 colliders.append(sol1)
 
-mur1: RectangleCollider = RectangleCollider(1000, 280, 50, 50)
+mur1: RectangleCollider = RectangleCollider(1000, 280, 50, 50, Color(0,255,0), screen)
 colliders.append(mur1)
 
-p: Player = Player(0,400, 50, 50, colliders)
+p: Player = Player(0,400, 50, 50, colliders, Color(255,0,0), screen)
 colliders.append(p)
 
-phantom: PhantomPlayer = PhantomPlayer(0, 350, 50, 50, colliders)
+phantom: PhantomPlayer = PhantomPlayer(0, 350, 50, 50, colliders, Color(0,0,255), screen)
 colliders.append(phantom)
 
 activePlayer: Player = p
@@ -70,7 +71,8 @@ while running:
     screen.fill("white")
 
     for c in colliders:
-        pygame.draw.rect(screen, "red", Rect(c.x, toPygameY(c.y, c.height, screenHeight) ,c.width,c.height))
+        c.show()
+        #pygame.draw.rect(screen, "red", Rect(c.x, toPygameY(c.y, c.height, screenHeight) ,c.width,c.height))
 
     pygame.display.flip()
 
