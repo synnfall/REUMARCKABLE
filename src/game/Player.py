@@ -36,6 +36,7 @@ class Player(Entity):
     def applyGravity(self):
         self.yMove -= 5
 
+    i = 0
     def move(self):
         if self.isJumping:
             if len(self.jumpStep) != 0:
@@ -45,11 +46,15 @@ class Player(Entity):
         if possibleMovement == (0, 0):
             futureXMove = self.evaluateMovement(self.xMove, 0)[0]
             futureYMove = self.evaluateMovement(0, self.yMove)[1]
-            self.xMove = futureXMove
             if self.yMove != 0 and futureYMove == 0:
                 self.isJumping = False
                 self.jumpStep = []
-            self.yMove = futureYMove
+            if (self.xMove, self.yMove) != (futureXMove, futureYMove):
+                self.xMove = futureXMove
+                self.yMove = futureYMove
+            else:
+                self.xMove = 0
+                self.yMove = 0
         else:
             self.xMove = possibleMovement[0]
             self.yMove = possibleMovement[1]
