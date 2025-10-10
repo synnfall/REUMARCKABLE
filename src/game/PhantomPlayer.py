@@ -5,7 +5,7 @@ class PhantomPlayer(Player):
     movementsList: list[int] = []
 
     def jump(self):
-        if not self.isJumping:
+        if self.isActive and not self.isJumping:
             self.movementsList.append( 0 )
         super().jump()
     
