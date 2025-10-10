@@ -9,14 +9,25 @@ class RectangleCollider(Collideable):
     color: Color
     surface: Surface
 
-    def __init__(self, x: int, y: int, w: int, h: int, color: Color, surface: Surface) -> None:
+    def __init__(self, x: int, y: int, w: int, h: int, priority: int, color: Color, surface: Surface) -> None:
         self.x = x
         self.y = y
         self.width = w
         self.height = h
+        self.priority = priority
         self.color = color
         self.surface = surface
     
     def show(self):
-        draw.rect(self.surface, self.color, Rect(self.x, self.surface.get_height() - self.y - self.height, self.width, self.height))
+        draw.rect(
+            self.surface,
+            self.color,
+            Rect(
+                self.x,
+                self.surface.get_height() - self.y - self.height,
+                self.width,
+                self.height
+            )
+        )
         return
+

@@ -12,31 +12,47 @@ class Player(Entity):
     collideableList: list[Collideable]
     jumpStep: list[int] = []
     isJumping: bool = False
-    i: int = 0
 
     color: Color
     drawSurface: Surface
 
+    spawnX: int
+    spawnY: int
+
+    lastGravity: int = 0
+
     def __init__(self, x: int, y: int, width: int, height: int, collideableList: list[Collideable], color: Color, drawSurface: Surface) -> None:
         self.x = x
         self.y = y
+
+        self.spawnX = x
+        self.spawnY = y
+
         self.width = width
         self.height = height
+        self.priority = 50
 
         self.collideableList = collideableList
 
         self.color = color
         self.drawSurface = drawSurface
     
+    def spawn(self):
+        """Place le joueur à son point d'apparition"""
+        self.x = self.spawnX
+        self.y = self.spawnY
+
     def jump(self):
+        """Génère une liste de mouvement verticaux représentant la poussée d'un saut"""
         if not self.isJumping:
-            self.jumpStep = [10 if i <= 10 else 5 for i in range(13)]
+            self.jumpStep = [6 if i <= 10 else 1 for i in range(13)]
             self.isJumping = True
     
     def applyGravity(self):
-        self.yMove -= 5
+        """Applique une formule compliquée pour générer la gravité sur le joueur"""
+        self.lastGravity += 1
+        self.yMove -= self.lastGravity
 
-    i = 0
     def move(self):
         if self.isJumping:
             if len(self.jumpStep) != 0:
@@ -62,7 +78,11 @@ class Player(Entity):
         
         if self.yMove < 0:
             self.isJumping = True
+        else:
+            self.lastGravity = 0
         super().move()
+        if self.drawSurface.get_height() <= self.y or self.y + self.height <= 0:
+            self.spawn()
     
     def show(self):
         draw.rect(
@@ -85,7 +105,7 @@ class Player(Entity):
         while i < len(self.collideableList):
             collideable = self.collideableList[i]
             if collideable != self:
-                cc: tuple[float, float] = self.willCollideWhen(collideable, xMove, yMove)
+                cc: tuple[float, float] = self.willCollideWhen(collideable, xMove, yMove) # cc : collide coefficients
                 if cc != (-1,-1):
                     if not collide and collideCoefficients == (-1,-1):
                         collide = True
@@ -98,5 +118,5 @@ class Player(Entity):
             if not collideCoefficients[0] == collideCoefficients[1] == 0:
                 t: float = collideCoefficients[0]
                 xMove = floor(t * self.xMove) if 0 <= self.xMove else ceil(t * self.xMove)
-                yMove = floor(t * self.yMove) if 0 <= self.yMove else ceil(t * self.yMove)
+                yMove = floor(t * self.yMove) if 0 <= self.yMove else ceil(t * self.yMove) 
         return (xMove, yMove)
