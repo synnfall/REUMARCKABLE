@@ -26,3 +26,8 @@ class Collideable(Object):
     def isColliding(self, c: Collideable) -> bool:
         """Retourne si le Collideable actuel est en collision avec le Collideable c"""
         return c.x <= self.x + self.width and self.x <= c.x+ c.width and c.y <= self.y + self.height and self.y <= c.y + c.height # <=> !(pas de collision)
+
+class Clickable(Object):
+    @abstractmethod
+    def onClick(self):
+        pass
