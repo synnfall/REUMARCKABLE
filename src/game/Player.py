@@ -46,10 +46,11 @@ class Player(Entity):
         if possibleMovement == (0, 0):
             futureXMove = self.evaluateMovement(self.xMove, 0)[0]
             futureYMove = self.evaluateMovement(0, self.yMove)[1]
-            if self.yMove != 0 and futureYMove == 0:
+            if self.yMove < 0 and futureYMove == 0: # s'il est au sol ou atteint le sol | self.yMove: slimy head ?
                 self.isJumping = False
                 self.jumpStep = []
-            if (self.xMove, self.yMove) != (futureXMove, futureYMove):
+            
+            if (self.xMove, self.yMove) != (futureXMove, futureYMove): # si le joueur ne fonce pas dans un coin, on accepte le mouvement
                 self.xMove = futureXMove
                 self.yMove = futureYMove
             else:
@@ -64,7 +65,16 @@ class Player(Entity):
         super().move()
     
     def show(self):
-        draw.rect(self.drawSurface, self.color, Rect(self.x, self.drawSurface.get_height() - self.y - self.height, self.width, self.height))
+        draw.rect(
+            self.drawSurface,
+            self.color,
+            Rect(
+                self.x, 
+                self.drawSurface.get_height() - self.y - self.height, 
+                self.width, 
+                self.height
+            )
+        )
         return
     
     def evaluateMovement(self, xMove: int, yMove: int) -> tuple[int,int]:
