@@ -16,9 +16,6 @@ class PhantomPlayer(Player):
         if self.isActive and newXPos - previousXPos != 0:
             self.movementsList.append( newXPos - previousXPos )
 
-    def switchActive(self):
-        self.isActive = not self.isActive
-    
     def canSetActive(self):
         return not self.isActive and len(self.movementsList) == 0
 

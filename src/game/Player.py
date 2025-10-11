@@ -2,6 +2,7 @@ from math import floor, ceil
 
 from engine.Object import Collideable
 from engine.Entity import Entity
+from game.Utils import toPygameY
 
 import pygame.draw as draw
 from pygame.surface import Surface
@@ -20,6 +21,8 @@ class Player(Entity):
     spawnY: int
 
     lastGravity: int = 0
+
+    isActive: bool = True
 
     def __init__(self, x: int, y: int, width: int, height: int, collideableList: list[Collideable], color: Color, drawSurface: Surface) -> None:
         self.x = x
@@ -84,13 +87,16 @@ class Player(Entity):
         if self.drawSurface.get_height() <= self.y or self.y + self.height <= 0:
             self.spawn()
     
+    def switchActive(self):
+        self.isActive = not self.isActive
+    
     def show(self):
         draw.rect(
             self.drawSurface,
-            self.color,
+            self.color if self.isActive else self.color - Color(50, 50, 50),
             Rect(
                 self.x, 
-                self.drawSurface.get_height() - self.y - self.height, 
+                toPygameY(self.y, self.height, self.drawSurface.get_height()), 
                 self.width, 
                 self.height
             )
