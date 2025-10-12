@@ -1,7 +1,7 @@
 from engine.Object import Object
 from game.Utils import toPygameY
 
-from pygame import Surface, transform, font, Color
+from pygame import Surface, transform, font, Color, SRCALPHA
 
 class Text(Object):
     def setPosition(self, x:int, y:int):
@@ -21,7 +21,16 @@ class StaticText(Text):
         self.y = y
         self.width = width
         self.height = height
-        self.toDisplay = font.render(text, True, color, backgroundColor)
+
+        toDisplay = font.render(text, True, color)
+
+        if backgroundColor != None:
+            backgroundSurface: Surface = Surface((self.width, self.height), SRCALPHA)
+            backgroundSurface.fill(backgroundColor)
+            backgroundSurface.blit(toDisplay, (0,0))
+            toDisplay = backgroundSurface
+        
+        self.toDisplay = toDisplay
         self.drawSurface = drawSurface
     
     def show(self):
@@ -54,7 +63,14 @@ class DynamicText(Text):
         self.drawSurface = drawSurface
     
     def show(self):
-        toDisplay = self.textFont.render(self.text, True, self.color, self.backgroundColor)
+        toDisplay = self.textFont.render(self.text, True, self.color)
+
+        if self.backgroundColor != None:
+            backgroundSurface: Surface = Surface((self.width, self.height), SRCALPHA)
+            backgroundSurface.fill( self.backgroundColor )
+            backgroundSurface.blit(toDisplay, (0,0))
+            toDisplay = backgroundSurface
+        
         self.drawSurface.blit(
             transform.scale(toDisplay, (self.width, self.height)),
             (
