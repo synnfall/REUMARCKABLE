@@ -1,0 +1,76 @@
+from engine.Object import Object
+from game.Utils import toPygameY
+
+from pygame import Surface, transform, font, Color
+
+class Text(Object):
+    def setPosition(self, x:int, y:int):
+        self.x = x
+        self.y = y
+    
+    def setSize(self, width:int, height:int):
+        self.width = width
+        self.height = height
+
+class StaticText(Text):
+    toDisplay: Surface
+    drawSurface: Surface
+
+    def __init__(self, text:str, font: font.Font, color: Color, backgroundColor: Color|None, x:int, y:int, width:int, height:int, drawSurface: Surface) -> None:
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.toDisplay = font.render(text, True, color, backgroundColor)
+        self.drawSurface = drawSurface
+    
+    def show(self):
+        self.drawSurface.blit(
+            transform.scale(self.toDisplay, (self.width, self.height)),
+            (
+                self.x,
+                toPygameY(self.y, self.height, self.drawSurface.get_height())
+            )
+        )
+
+class DynamicText(Object):
+    text: str
+    textFont: font.Font
+    color: Color
+    backgroundColor: Color|None
+    drawSurface: Surface
+
+    def __init__(self, text:str, font:font.Font, color:Color, backgroundColor:Color|None, x:int, y:int, width:int, height:int, drawSurface:Surface) -> None:
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+        self.text = text
+        self.textFont = font
+        self.color = color
+        self.backgroundColor = backgroundColor
+
+        self.drawSurface = drawSurface
+    
+    def show(self):
+        toDisplay = self.textFont.render(self.text, True, self.color, self.backgroundColor)
+        self.drawSurface.blit(
+            transform.scale(toDisplay, (self.width, self.height)),
+            (
+                self.x,
+                toPygameY(self.y, self.height, self.drawSurface.get_height())
+            )
+        )
+    
+    def setText(self, text:str):
+        self.text = text
+    
+    def setFont(self, font:font.Font):
+        self.textFont = font
+    
+    def setColor(self, color:Color):
+        self.color = color
+    
+    def setBackgroundColor(self, backgroundColor:Color):
+        self.backgroundColor = backgroundColor
