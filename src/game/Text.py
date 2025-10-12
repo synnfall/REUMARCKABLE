@@ -33,7 +33,7 @@ class StaticText(Text):
             )
         )
 
-class DynamicText(Object):
+class DynamicText(Text):
     text: str
     textFont: font.Font
     color: Color
@@ -72,5 +72,5 @@ class DynamicText(Object):
     def setColor(self, color:Color):
         self.color = color
     
-    def setBackgroundColor(self, backgroundColor:Color):
+    def setBackgroundColor(self, backgroundColor:Color|None):
         self.backgroundColor = backgroundColor
