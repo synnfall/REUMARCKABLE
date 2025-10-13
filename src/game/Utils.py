@@ -4,6 +4,11 @@ from sys import path
 EXEC_DIRECTORY: str = path[0] + "/"
 IMAGE_DIRECTORY: str = EXEC_DIRECTORY + "../images/"
 NO_TEXTURE: str = "no_texture.png"
+ICON: str = "icon.png"
+
+FRAME_NAME: str = "REUMARKABLE"
+FRAME_WIDTH: int = 1280
+FRAME_HEIGHT: int = 720
 
 # Fonctions utiles
 def toPygameY(y:int, height:int, surfaceHeight:int) -> int:

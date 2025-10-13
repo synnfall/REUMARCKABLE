@@ -44,6 +44,9 @@ class Player(Entity):
         """Place le joueur à son point d'apparition"""
         self.x = self.spawnX
         self.y = self.spawnY
+        self.xMove = 0
+        self.yMove = 0
+        self.lastGravity = 0
 
     def jump(self):
         """Génère une liste de mouvement verticaux représentant la poussée d'un saut"""
