@@ -5,13 +5,13 @@ from game.Player import Player
 from pygame.surface import Surface
 from pygame.color import Color
 from pygame.rect import Rect
-import pygame.draw as draw
+from pygame import transform
 
 class RectangleCollider(Collideable):
-    color: Color
+    color: Color|None
     drawSurface: Surface
 
-    def __init__(self, x: int, y: int, w: int, h: int, priority: int, color: Color, surface: Surface) -> None:
+    def __init__(self, x: int, y: int, w: int, h: int, priority: int, color: Color|None, surface: Surface) -> None:
         self.x = x
         self.y = y
         self.width = w
@@ -21,17 +21,17 @@ class RectangleCollider(Collideable):
         self.drawSurface = surface
     
     def show(self):
-        draw.rect(
-            self.drawSurface,
-            self.color,
-            Rect(
+        if self.color == None or self.color.a == 0:
+            return
+        toDisplay: Surface = Surface((self.width,self.height))
+        toDisplay.fill(self.color)
+        self.drawSurface.blit(
+            transform.scale(toDisplay, (self.width, self.height)),
+            (
                 self.x,
-                toPygameY(self.y, self.height, self.drawSurface.get_height()),
-                self.width,
-                self.height
+                toPygameY(self.y, self.height, self.drawSurface.get_height())
             )
         )
-        return
 
 class PlayerDetectorCollider(RectangleCollider):
     player: Player
