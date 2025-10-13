@@ -7,24 +7,30 @@ from os.path import isfile
 
 class Image(Object):
     imageSurface: Surface
-    drawSurface: Surface
+    drawSurface: Surface|None
 
     def __init__(self, x:int, y:int, width:int, height:int, imageName:str, drawSurface: Surface) -> None:
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        
-        if not isfile(IMAGE_DIRECTORY + imageName):
-            imageName = NO_TEXTURE
-        self.imageSurface = image.load(IMAGE_DIRECTORY + imageName).convert()
+        self.imageSurface = getImage(imageName)
         self.drawSurface = drawSurface
-    
+
     def show(self):
+        if self.drawSurface == None:
+            return
+        
         self.drawSurface.blit(
-            transform.scale(self.imageSurface, (self.width, self.height)),
+            transform.scale(self.imageSurface, (self.width,self.height)),
             (
                 self.x,
                 toPygameY(self.y, self.height, self.drawSurface.get_height())
             )
         )
+    
+def getImage(imageName: str) -> Surface:
+    """Retourne la surface de l'image demandé"""
+    if not isfile(IMAGE_DIRECTORY + imageName):
+        imageName = NO_TEXTURE
+    return image.load(IMAGE_DIRECTORY + imageName).convert() 
