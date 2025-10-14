@@ -22,7 +22,7 @@ class StaticText(Text):
         self.width = width
         self.height = height
 
-        toDisplay = font.render(text, True, color)
+        toDisplay = font.render(text if text != "" else " ", True, color)
 
         if backgroundColor != None:
             backgroundSurface: Surface = Surface((self.width, self.height), SRCALPHA)
@@ -63,7 +63,7 @@ class DynamicText(Text):
         self.drawSurface = drawSurface
     
     def show(self):
-        toDisplay = self.textFont.render(self.text, True, self.color)
+        toDisplay = self.textFont.render(self.text if self.text != "" else " ", True, self.color)
 
         if self.backgroundColor != None:
             backgroundSurface: Surface = Surface((self.width, self.height), SRCALPHA)

@@ -68,7 +68,7 @@ class Player(Entity):
         if possibleMovement == (0, 0):
             futureXMove = self.evaluateMovement(self.xMove, 0)[0]
             futureYMove = self.evaluateMovement(0, self.yMove)[1]
-            if self.yMove < 0 and futureYMove == 0: # s'il est au sol ou atteint le sol | self.yMove: slimy head ?
+            if self.yMove < 0 and futureYMove == 0: # s'il est au sol ou atteint le sol | self.yMove != 0: slimy head ?
                 self.isJumping = False
                 self.jumpStep = []
             
