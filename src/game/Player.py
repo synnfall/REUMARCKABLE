@@ -4,6 +4,8 @@ from engine.Object import Collideable
 from engine.Entity import Entity
 from game.Utils import toPygameY
 
+from game.Image import Image
+
 import pygame.draw as draw
 from pygame.surface import Surface
 from pygame.rect import Rect
@@ -14,7 +16,8 @@ class Player(Entity):
     jumpStep: list[int] = []
     isJumping: bool = False
 
-    color: Color
+    color: Color|None = None
+    image: Image|None = None
     drawSurface: Surface
 
     spawnX: int
@@ -24,7 +27,7 @@ class Player(Entity):
 
     isActive: bool = True
 
-    def __init__(self, x: int, y: int, width: int, height: int, collideableList: list[Collideable], color: Color, drawSurface: Surface) -> None:
+    def __init__(self, x: int, y: int, width: int, height: int, collideableList: list[Collideable], texture: Color|str, drawSurface: Surface) -> None:
         self.x = x
         self.y = y
 
@@ -37,7 +40,10 @@ class Player(Entity):
 
         self.collideableList = collideableList
 
-        self.color = color
+        if isinstance(texture, Color):
+            self.color = texture
+        else:
+            self.image = Image(0,0,width,height,texture,drawSurface)
         self.drawSurface = drawSurface
     
     def spawn(self):
@@ -94,16 +100,20 @@ class Player(Entity):
         self.isActive = not self.isActive
     
     def show(self):
-        draw.rect(
-            self.drawSurface,
-            self.color if self.isActive else self.color - Color(50, 50, 50),
-            Rect(
-                self.x, 
-                toPygameY(self.y, self.height, self.drawSurface.get_height()), 
-                self.width, 
-                self.height
+        if self.color:
+            draw.rect(
+                self.drawSurface,
+                self.color if self.isActive else self.color - Color(50, 50, 50),
+                Rect(
+                    self.x, 
+                    toPygameY(self.y, self.height, self.drawSurface.get_height()), 
+                    self.width, 
+                    self.height
+                )
             )
-        )
+        elif self.image:
+            self.image.setCoordinate(self.x,self.y)
+            self.image.show()
         return
     
     def evaluateMovement(self, xMove: int, yMove: int) -> tuple[int,int]:
