@@ -7,9 +7,7 @@ from game.Utils import toPygameY
 from game.Image import Image
 
 import pygame.draw as draw
-from pygame.surface import Surface
-from pygame.rect import Rect
-from pygame.color import Color
+from pygame import Surface, Rect, Color, SRCALPHA
 
 class Player(Entity):
     collideableList: list[Collideable]
@@ -101,14 +99,13 @@ class Player(Entity):
     
     def show(self):
         if self.color:
-            draw.rect(
-                self.drawSurface,
-                self.color if self.isActive else self.color - Color(50, 50, 50),
-                Rect(
-                    self.x, 
-                    toPygameY(self.y, self.height, self.drawSurface.get_height()), 
-                    self.width, 
-                    self.height
+            toDraw: Surface = Surface((self.width,self.height), SRCALPHA)
+            toDraw.fill(self.color if self.isActive else (self.color - Color(50,50,50,0)))
+            self.drawSurface.blit(
+                toDraw,
+                (
+                    self.x,
+                    toPygameY(self.y, self.height, self.drawSurface.get_height())
                 )
             )
         elif self.image:
