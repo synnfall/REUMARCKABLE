@@ -13,8 +13,9 @@ class PhantomPlayer(Player):
         previousXPos: int = self.x
         super().move()
         newXPos: int = self.x
-        if self.isActive and newXPos - previousXPos != 0:
-            self.movementsList.append( newXPos - previousXPos )
+        deltaMove: int = newXPos - previousXPos
+        if self.isActive and deltaMove != 0:
+            self.movementsList.append( deltaMove )
 
     def canSetActive(self):
         return not self.isActive and len(self.movementsList) == 0
