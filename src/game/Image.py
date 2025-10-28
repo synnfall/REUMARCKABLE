@@ -29,6 +29,14 @@ class Image(Object):
             )
         )
     
+    def setCoordinate(self, x:int,y:int):
+        self.x = x
+        self.y = y
+    
+    def setSize(self, width:int, height:int):
+        self.width = width
+        self.height = height
+    
 def getImage(imageName: str) -> Surface:
     """Retourne la surface de l'image demandé"""
     if not isfile(IMAGE_DIRECTORY + imageName):
