@@ -1,11 +1,12 @@
-from engine.Object import Collideable
+from engine.Object import Object, Collideable
+from engine.Actuator import Actuator, Activated
 from game.Utils import toPygameY
 from game.Player import Player
 from game.Image import Image
 
 from pygame import Surface, Color, SRCALPHA
 
-class RectangleCollider(Collideable):
+class RectangleCollider(Collideable, Activated):
     color: Color|None = None
     image: Image|None = None
     drawSurface: Surface
@@ -48,3 +49,8 @@ class PlayerDetectorCollider(RectangleCollider):
     def collidePlayer(self) -> bool:
         """Retourne si le joueur touche le detecteur"""
         return self.isColliding(self.player)
+
+class Button(RectangleCollider, Actuator):
+    def __init__(self, x:int, y:int, w:int, h:int, activated: Activated, texture:Color|str|None, surface:Surface) -> None:
+        self.activated = activated
+        super().__init__(x, y, w, h, 0, False, texture, surface)
