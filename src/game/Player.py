@@ -35,6 +35,7 @@ class Player(Entity):
         self.width = width
         self.height = height
         self.priority = 50
+        self.hardColliding = True
 
         self.collideableList = collideableList
 
@@ -120,7 +121,7 @@ class Player(Entity):
         i = 0
         while i < len(self.collideableList):
             collideable = self.collideableList[i]
-            if collideable != self:
+            if collideable != self and collideable.hardColliding:
                 cc: tuple[float, float] = self.willCollideWhen(collideable, xMove, yMove) # cc : collide coefficients
                 if cc != (-1,-1):
                     if not collide and collideCoefficients == (-1,-1):

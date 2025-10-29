@@ -10,15 +10,16 @@ class RectangleCollider(Collideable):
     image: Image|None = None
     drawSurface: Surface
 
-    def __init__(self, x: int, y: int, w: int, h: int, priority: int, texture: Color|str|None, surface: Surface) -> None:
+    def __init__(self, x: int, y: int, w: int, h: int, priority: int, hardColliding:bool, texture: Color|str|None, surface: Surface) -> None:
         self.x = x
         self.y = y
         self.width = w
         self.height = h
         self.priority = priority
+        self.hardColliding = hardColliding
         if texture == None or isinstance(texture, Color):
             self.color = texture
-        elif texture != "":
+        else:
             self.image = Image(x,y,w,h,texture,surface)
         self.drawSurface = surface
     
@@ -40,9 +41,9 @@ class RectangleCollider(Collideable):
 class PlayerDetectorCollider(RectangleCollider):
     player: Player
     
-    def __init__(self, x: int, y: int, w: int, h: int, priority: int, texture: Color|str, surface: Surface, player: Player) -> None:
+    def __init__(self, x: int, y: int, w: int, h: int, priority: int, hardColliding: bool, texture: Color|str, surface: Surface, player: Player) -> None:
         self.player = player
-        super().__init__(x, y, w, h, priority, texture, surface)
+        super().__init__(x, y, w, h, priority, hardColliding, texture, surface)
     
     def collidePlayer(self) -> bool:
         """Retourne si le joueur touche le detecteur"""

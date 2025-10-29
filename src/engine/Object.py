@@ -24,6 +24,7 @@ class MoveableObject(Object):
 
 class Collideable(Object):
     priority: int
+    hardColliding: bool
 
     def isColliding(self, c: Collideable) -> bool:
         """Retourne si le Collideable actuel est en collision avec le Collideable c"""
