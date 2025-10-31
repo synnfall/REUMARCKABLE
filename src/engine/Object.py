@@ -45,3 +45,7 @@ class Clickable(Object):
     @abstractmethod
     def onClick(self):
         pass
+
+    def isOn(self, x:int, y:int) -> bool:
+        """Retourne si les coordonnées x,y sont comprise dans la zone clickable"""
+        return x <= self.x + self.width and self.x <= x and y <= self.y + self.height and self.y <= y
