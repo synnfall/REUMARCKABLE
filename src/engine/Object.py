@@ -11,6 +11,13 @@ class Object(ABC):
     def show(self):
         pass
 
+    def showAt(self, x:int, y:int):
+        self.x, x = x, self.x
+        self.y, y = y, self.y
+        self.show()
+        self.x = x
+        self.y = y
+
     def update(self):
         """Mets à jour l'état d'un objet"""
         pass
