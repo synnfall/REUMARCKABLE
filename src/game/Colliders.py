@@ -50,7 +50,7 @@ class PlayerDetectorCollider(RectangleCollider):
         """Retourne si le joueur touche le detecteur"""
         return self.isColliding(self.player)
 
-class Button(RectangleCollider, Actuator):
+class ActuatorCollider(RectangleCollider, Actuator):
     def __init__(self, x:int, y:int, w:int, h:int, activated: Activated, texture:Color|str|None, surface:Surface) -> None:
         self.activated = activated
         super().__init__(x, y, w, h, 0, False, texture, surface)
