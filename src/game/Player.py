@@ -6,8 +6,7 @@ from game.Utils import toPygameY
 
 from game.Image import Image
 
-import pygame.draw as draw
-from pygame import Surface, Rect, Color, SRCALPHA
+from pygame import Surface, Color, SRCALPHA
 
 class Player(Entity):
     collideableList: list[Collideable]
@@ -59,6 +58,10 @@ class Player(Entity):
             self.jumpStep = [6 if i <= 10 else 1 for i in range(13)]
             self.isJumping = True
     
+    def update(self):
+        self.applyGravity()
+        self.move()
+
     def applyGravity(self):
         """Applique une formule compliquée pour générer la gravité sur le joueur"""
         self.lastGravity += 1

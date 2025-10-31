@@ -11,6 +11,10 @@ class Object(ABC):
     def show(self):
         pass
 
+    def update(self):
+        """Mets à jour l'état d'un objet"""
+        pass
+
 class MoveableObject(Object):
     xMove: int = 0
     yMove: int = 0

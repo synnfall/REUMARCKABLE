@@ -27,3 +27,7 @@ class PhantomPlayer(Player):
                 self.jump()
             else:
                 self.xMove += -movement
+    
+    def update(self):
+        self.goBack()
+        super().update()
