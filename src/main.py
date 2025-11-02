@@ -47,9 +47,7 @@ class Game:
             for _ in pygame.event.get( pygame.QUIT ):
                 self.stop()
             
-            if self.toRun != None:
-                self.screen.fill("white")
-                self.toRun(self)
+            if self.toRun != None:self.toRun(self)
             self.clock.tick(60)
             display.flip()
         pygame.quit()
