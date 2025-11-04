@@ -17,11 +17,11 @@ class StaticText(Text):
     toDisplay: Surface
     drawSurface: Surface
 
-    def __init__(self, text:str, font: Font|None, color: Color, backgroundColor: Color|None, x:int, y:int, width:int, height:int, drawSurface: Surface) -> None:
+    def __init__(self, text:str, fontFile: str|None, font_size: int, color: Color, backgroundColor: Color|None, x:int, y:int, width:int, height:int, drawSurface: Surface) -> None:
         self.x = x
         self.y = y
 
-        font = font if font != None else Font(get_default_font(), 32)
+        font = Font(fontFile, font_size)
         optimizedTextSize = font.size(text)
         self.width = width if width != 0 else optimizedTextSize[0]
         self.height = height if height != 0 else optimizedTextSize[1]
@@ -48,19 +48,21 @@ class StaticText(Text):
 
 class DynamicText(Text):
     text: str
-    textFont: Font
+    fontFile: str|None
+    fontSize: int
     color: Color
     backgroundColor: Color|None
     drawSurface: Surface
 
-    def __init__(self, text:str, font:Font|None, color:Color, backgroundColor:Color|None, x:int, y:int, width:int, height:int, drawSurface:Surface) -> None:
+    def __init__(self, text:str, fontFile: str|None, fontSize: int, color:Color, backgroundColor:Color|None, x:int, y:int, width:int, height:int, drawSurface:Surface) -> None:
         self.x = x
         self.y = y
         self.width = width
         self.height = height
 
         self.text = text
-        self.textFont = font if font != None else Font(get_default_font(), 32)
+        self.fontFile = fontFile
+        self.fontSize = fontSize
         self.color = color
         self.backgroundColor = backgroundColor
 
@@ -69,11 +71,12 @@ class DynamicText(Text):
     def show(self):
         width: int = self.width
         height: int = self.height
-        optimizedTextSize = self.textFont.size(self.text)
+        font: Font = Font(self.fontFile, self.fontSize)
+        optimizedTextSize = font.size(self.text)
         if width == 0: width = optimizedTextSize[0]
         if height == 0: height = optimizedTextSize[1]
 
-        toDisplay = self.textFont.render(self.text if self.text != "" else " ", True, self.color)
+        toDisplay = font.render(self.text if self.text != "" else " ", True, self.color)
 
         if self.backgroundColor != None:
             backgroundSurface: Surface = Surface((width, height), SRCALPHA)
@@ -92,8 +95,11 @@ class DynamicText(Text):
     def setText(self, text:str):
         self.text = text
     
-    def setFont(self, font:Font):
-        self.textFont = font
+    def setFontFile(self, fontFile:str|None):
+        self.fontFile = fontFile
+        
+    def setFontSize(self, fontSize:int):
+        self.fontSize = fontSize
     
     def setColor(self, color:Color):
         self.color = color
