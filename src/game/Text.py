@@ -1,7 +1,8 @@
 from engine.Object import Object
 from game.Utils import toPygameY
 
-from pygame import Surface, transform, font, Color, SRCALPHA
+from pygame import Surface, transform, Color, SRCALPHA
+from pygame.font import Font, get_default_font
 
 class Text(Object):
     def setPosition(self, x:int, y:int):
@@ -16,11 +17,14 @@ class StaticText(Text):
     toDisplay: Surface
     drawSurface: Surface
 
-    def __init__(self, text:str, font: font.Font, color: Color, backgroundColor: Color|None, x:int, y:int, width:int, height:int, drawSurface: Surface) -> None:
+    def __init__(self, text:str, font: Font|None, color: Color, backgroundColor: Color|None, x:int, y:int, width:int, height:int, drawSurface: Surface) -> None:
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
+
+        font = font if font != None else Font(get_default_font(), 32)
+        optimizedTextSize = font.size(text)
+        self.width = width if width != 0 else optimizedTextSize[0]
+        self.height = height if height != 0 else optimizedTextSize[1]
 
         toDisplay = font.render(text if text != "" else " ", True, color)
 
@@ -44,29 +48,35 @@ class StaticText(Text):
 
 class DynamicText(Text):
     text: str
-    textFont: font.Font
+    textFont: Font
     color: Color
     backgroundColor: Color|None
     drawSurface: Surface
 
-    def __init__(self, text:str, font:font.Font, color:Color, backgroundColor:Color|None, x:int, y:int, width:int, height:int, drawSurface:Surface) -> None:
+    def __init__(self, text:str, font:Font|None, color:Color, backgroundColor:Color|None, x:int, y:int, width:int, height:int, drawSurface:Surface) -> None:
         self.x = x
         self.y = y
         self.width = width
         self.height = height
 
         self.text = text
-        self.textFont = font
+        self.textFont = font if font != None else Font(get_default_font(), 32)
         self.color = color
         self.backgroundColor = backgroundColor
 
         self.drawSurface = drawSurface
     
     def show(self):
+        width: int = self.width
+        height: int = self.height
+        optimizedTextSize = self.textFont.size(self.text)
+        if width == 0: width = optimizedTextSize[0]
+        if height == 0: height = optimizedTextSize[1]
+
         toDisplay = self.textFont.render(self.text if self.text != "" else " ", True, self.color)
 
         if self.backgroundColor != None:
-            backgroundSurface: Surface = Surface((self.width, self.height), SRCALPHA)
+            backgroundSurface: Surface = Surface((width, height), SRCALPHA)
             backgroundSurface.fill( self.backgroundColor )
             backgroundSurface.blit(toDisplay, (0,0))
             toDisplay = backgroundSurface
@@ -82,7 +92,7 @@ class DynamicText(Text):
     def setText(self, text:str):
         self.text = text
     
-    def setFont(self, font:font.Font):
+    def setFont(self, font:Font):
         self.textFont = font
     
     def setColor(self, color:Color):
