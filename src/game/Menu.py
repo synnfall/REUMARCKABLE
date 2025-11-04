@@ -1,4 +1,9 @@
+import pygame
+
 from engine.Object import Object,Clickable
+
+from game.Game import Game
+from game.Utils import toPygameY
 
 class Menu(Object):
     content: list[Object] = []
@@ -34,4 +39,13 @@ class Menu(Object):
                 clickable.onClick()
                 found = True
             i += 1
-        
+    
+    def run(self, game: Game):
+        self.show()
+        for event in pygame.event.get(pygame.MOUSEBUTTONDOWN):
+            if event.dict["button"] == 1: # clic gauche
+                mousePos = event.dict["pos"]
+                self.onClick(
+                    mousePos[0],
+                    toPygameY(mousePos[1], 0, game.getScreen().get_height())
+                )
