@@ -76,7 +76,7 @@ class DynamicText(Text):
         if width == 0: width = optimizedTextSize[0]
         if height == 0: height = optimizedTextSize[1]
 
-        toDisplay = font.render(self.text if self.text != "" else " ", True, self.color)
+        toDisplay: Surface = font.render(self.text if self.text != "" else " ", True, self.color)
 
         if self.backgroundColor != None:
             backgroundSurface: Surface = Surface((width, height), SRCALPHA)
@@ -85,10 +85,14 @@ class DynamicText(Text):
             toDisplay = backgroundSurface
         
         self.drawSurface.blit(
-            transform.scale(toDisplay, (self.width, self.height)),
+            transform.scale(toDisplay, (width, height)),
             (
-                self.x,
-                toPygameY(self.y, self.height, self.drawSurface.get_height())
+                self.x if self.x != -1 else self.drawSurface.get_width() // 2 - width // 2,
+                toPygameY(
+                    self.y if self.y != -1 else self.drawSurface.get_height() // 2 - height // 2,
+                    height,
+                    self.drawSurface.get_height()
+                )
             )
         )
     
