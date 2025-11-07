@@ -1,4 +1,5 @@
 import pygame
+from pygame.event import Event
 
 from engine.Object import Object,Clickable
 
@@ -6,14 +7,16 @@ from game.Game import Game
 from game.Utils import toPygameY
 
 class Menu(Object):
-    content: list[Object] = []
-    clickableIndexes: list[int] = []
+    content: list[Object]
+    clickableIndexes: list[int]
 
     def __init__(self) -> None:
         self.x = 0
         self.y = 0
         self.height = 0
         self.width = 0
+        self.content = []
+        self.clickableIndexes = []
     
     def showAt(self, x:int, y:int):
         return
@@ -43,9 +46,12 @@ class Menu(Object):
     def run(self, game: Game):
         self.show()
         for event in pygame.event.get(pygame.MOUSEBUTTONDOWN):
-            if event.dict["button"] == 1: # clic gauche
-                mousePos = event.dict["pos"]
-                self.onClick(
-                    mousePos[0],
-                    toPygameY(mousePos[1], 0, game.getScreen().get_height())
-                )
+            self.handleClick(event, game)
+
+    def handleClick(self, event: Event, game: Game):
+        if event.dict["button"] == 1: # clic gauche
+            mousePos = event.dict["pos"]
+            self.onClick(
+                mousePos[0],
+                toPygameY(mousePos[1], 0, game.getScreen().get_height())
+            )
