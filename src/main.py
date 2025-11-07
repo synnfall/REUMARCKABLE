@@ -1,5 +1,5 @@
 import pygame
-from pygame import Color
+from pygame import Color, Surface, SRCALPHA
 
 from engine.Object import Collideable, Object
 from engine.Actuator import Actuator, Activated
@@ -12,7 +12,31 @@ from game.Image import Image
 from game.Text import DynamicText, StaticText
 from game.Utils import FRAME_WIDTH, FRAME_HEIGHT
 from game.Menu import Menu
-from game.Button import Button
+from game.Button import Button, TextButton
+from game.Utils import toPygameY
+
+class Rectangle(Object):
+    toDraw: Surface
+    drawSurface: Surface
+
+    def __init__(self, x:int, y:int, width:int, height:int, color:Color, drawSurface: Surface) -> None:
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.drawSurface = drawSurface
+
+        self.toDraw = Surface((width, height), flags=SRCALPHA)
+        pygame.draw.rect(self.toDraw, color, (0,0, width, height))
+
+    def show(self):
+        self.drawSurface.blit(
+            self.toDraw,
+            (
+                self.x,
+                toPygameY(self.y, self.height, self.drawSurface.get_height())
+            )
+        )
 
 
 class Main:
@@ -27,8 +51,10 @@ class Main:
     p: Player
     phantom: PhantomPlayer
 
-    def __init__(self) -> None:
-        game = Game()
+    menu: Menu|None = None
+
+    def __init__(self, game:Game|None = None) -> None:
+        game = game if game != None else Game()
         colliders:list[Collideable] = []
 
         rectangleCollidersInfo: list[ tuple[int,int,int,int,int,bool,Color|None] ] = [
@@ -115,6 +141,9 @@ class Main:
         game.setToRun(self.mainLoop)
         self.game = game
 
+    def closeMenu(self, button: TextButton|None = None):
+        self.menu = None
+
     def mainLoop(self, game: Game):
         activePlayer: Player = self.activePlayer
         p: Player = self.p
@@ -128,24 +157,37 @@ class Main:
 
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.dict["unicode"] in ["v", "V"]:
-                    if activePlayer == p:
-                        if phantom.canSetActive():
-                            self.activePlayer = phantom
+                if self.menu != None:
+                    if event.dict["unicode"] == "\x1b":
+                        self.closeMenu()
+                else:
+                    if event.dict["unicode"] in ["v", "V"]:
+                        if activePlayer == p:
+                            if phantom.canSetActive():
+                                self.activePlayer = phantom
+                                p.switchActive()
+                                phantom.switchActive()
+                        else:
+                            self.activePlayer = p
                             p.switchActive()
                             phantom.switchActive()
-                    else:
-                        self.activePlayer = p
-                        p.switchActive()
-                        phantom.switchActive()
-                elif event.dict["unicode"] in ["e", "E"]:
-                    i = 0
-                    stop = False
-                    while i < len(actuators) and not stop:
-                        if actuators[i].isColliding(activePlayer):
-                            actuators[i].actuate()
-                            stop = True
-                        i += 1
+                    elif event.dict["unicode"] in ["e", "E"]:
+                        i = 0
+                        stop = False
+                        while i < len(actuators) and not stop:
+                            if actuators[i].isColliding(activePlayer):
+                                actuators[i].actuate()
+                                stop = True
+                            i += 1
+                    elif event.dict["unicode"] == "\x1b": # echap
+                        menu = Menu()
+                        menu.add(
+                            Rectangle(0,0, FRAME_WIDTH, FRAME_HEIGHT, Color(0,0,255, 25), game.getScreen()),
+                            TextButton(-1,-1,200,100, "Continuer", None, 32,None, Color(0,255,0), self.game.getScreen(), self.closeMenu)
+                        )
+                        self.menu = menu
+            if event.type == pygame.MOUSEBUTTONDOWN and self.menu != None:
+                self.menu.handleClick(event, game)
 
         testText.setBackgroundColor(None if phantom.canSetActive() or phantom.isActive else Color(0,0,0,140))
 
@@ -156,8 +198,9 @@ class Main:
         if keyPressedMap[pygame.K_SPACE]:
             activePlayer.jump()
 
-        p.update()
-        phantom.update()
+        if self.menu == None:
+            p.update()
+            phantom.update()
 
         game.getScreen().fill("white")
 
@@ -165,10 +208,27 @@ class Main:
             endText.setText("Bravo !")
         else:
             endText.setText("")
-
+        
         for o in self.toDisplay:
             o.show()
-        
         activePlayer.showAt(0,0)
+        
+        if self.menu != None:
+            self.menu.show()
+            self.menu.run(game)
 
-m: Main = Main()
+#m: Main = Main()
+
+game: Game = Game()
+mainMenu: Menu = Menu()
+
+def startGame(btn: TextButton):
+    Main(game)
+
+objs: list[Object] = [
+    StaticText("Reumarckable",None,32,Color(255,0,0),None,0,0,0,0,game.getScreen()),
+    Button(0,0,100,50),
+    TextButton(-1,-1,300,80, "Jouer", None, 100, Color(0,255,0), Color(255,0,0), game.getScreen(), startGame),
+]
+mainMenu.add(*objs)
+game.setToRun(mainMenu.run)
