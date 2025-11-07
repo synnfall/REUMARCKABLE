@@ -3,22 +3,9 @@ from pygame import Surface, Color, SRCALPHA
 
 from typing import Callable
 
-from engine.Object import Clickable
+from engine.Object import Button
 from game.Text import DynamicText
 from game.Utils import toPygameY
-
-class Button(Clickable):
-    def __init__(self, x:int, y:int, width:int, height: int) -> None:
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-    
-    def onClick(self):
-        pass
-
-    def show(self):
-        pass
 
 class TextButton(Button):
     text: str
@@ -30,7 +17,12 @@ class TextButton(Button):
     clickFunction: Callable[[TextButton], None]|None
 
     def __init__(self, x:int, y:int, width:int, height:int, text:str, fontFile:str|None, fontSize:int, textColor: Color|None, backgroundColor: Color|None, drawSurface:Surface, clickFunction: Callable[[TextButton],None]|None = None) -> None:
-        super().__init__(x, y, width, height)
+        super().__init__(
+            x if x != -1 else drawSurface.get_width() // 2 - width // 2,
+            y if y != -1 else drawSurface.get_height() // 2 - height // 2,
+            width,
+            height
+        )
         self.text = text
         self.fontFile = fontFile
         self.fontSize = fontSize
