@@ -15,19 +15,37 @@ from game.Menu import Menu
 from game.Button import Button, TextButton
 from game.Utils import toPygameY
 
+class Percent:
+    value: float
+    def __init__(self, value: float) -> None:
+        self.value = value
+
 class Rectangle(Object):
     toDraw: Surface
     drawSurface: Surface
 
-    def __init__(self, x:int, y:int, width:int, height:int, color:Color, drawSurface: Surface) -> None:
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+    def __init__(self, x:int|Percent, y:int|Percent, width:int|Percent, height:int|Percent, color:Color, drawSurface: Surface) -> None:
+        drawSurfaceWidth: int = drawSurface.get_width()
+        drawSurfaceHeight: int = drawSurface.get_height()
+
+        self.width = self.calc_percent(width, drawSurfaceWidth, drawSurfaceWidth)
+        self.height = self.calc_percent(height, drawSurfaceHeight, drawSurfaceHeight)
+
+        self.x = self.calc_percent(x, drawSurfaceWidth // 2 - self.width // 2, drawSurfaceWidth)
+        self.y = self.calc_percent(y, drawSurfaceHeight // 2 - self.height // 2, drawSurfaceHeight)
+
         self.drawSurface = drawSurface
 
-        self.toDraw = Surface((width, height), flags=SRCALPHA)
-        pygame.draw.rect(self.toDraw, color, (0,0, width, height))
+        self.toDraw = Surface((self.width, self.height), flags=SRCALPHA)
+        self.toDraw.fill(color)
+    
+    def calc_percent(self, val:int|Percent, value_neg: int, percent_of: int) -> int:
+        res: int
+        if isinstance(val, int):
+            res = val if -1 < val else value_neg
+        else:
+            res = int(percent_of * val.value / 100)
+        return res
 
     def show(self):
         self.drawSurface.blit(
@@ -141,8 +159,11 @@ class Main:
         game.setToRun(self.mainLoop)
         self.game = game
 
-    def closeMenu(self, button: TextButton|None = None):
+    def closeMenu(self, button: TextButton|None=None):
         self.menu = None
+    def quit(self, button: TextButton):
+        self.game.getScreen().fill("black")
+        self.game.setToRun(mainMenu.run)
 
     def mainLoop(self, game: Game):
         activePlayer: Player = self.activePlayer
@@ -183,7 +204,8 @@ class Main:
                         menu = Menu()
                         menu.add(
                             Rectangle(0,0, FRAME_WIDTH, FRAME_HEIGHT, Color(0,0,255, 25), game.getScreen()),
-                            TextButton(-1,-1,200,100, "Continuer", None, 32,None, Color(0,255,0), self.game.getScreen(), self.closeMenu)
+                            TextButton(-1,-1,200,100, "Continuer", None, 32,None, Color(0,255,0), self.game.getScreen(), self.closeMenu),
+                            TextButton(-1, 100, 200, 100, "Quitter", None, 32, None, Color(0,255,0), self.game.getScreen(), self.quit)
                         )
                         self.menu = menu
             if event.type == pygame.MOUSEBUTTONDOWN and self.menu != None:
@@ -224,11 +246,15 @@ mainMenu: Menu = Menu()
 
 def startGame(btn: TextButton):
     Main(game)
+def stopGame(btn: TextButton):
+    game.stop()
 
+gameScreen = game.getScreen()
 objs: list[Object] = [
-    StaticText("Reumarckable",None,32,Color(255,0,0),None,0,0,0,0,game.getScreen()),
-    Button(0,0,100,50),
-    TextButton(-1,-1,300,80, "Jouer", None, 100, Color(0,255,0), Color(255,0,0), game.getScreen(), startGame),
+    Rectangle(-1,0,Percent(50),-1, Color(255,0,255), gameScreen),
+    StaticText("Reumarckable",None,32,Color(255,0,0),None,0,0,0,0,gameScreen),
+    TextButton(-1,-1,300,80, "Jouer", None, 100, Color(0,255,0), Color(255,0,0), gameScreen, startGame),
+    TextButton(-1, 100, 300, 80, "Quitter", None, 100, Color(0,255,0), Color(255,0,0), gameScreen, stopGame),
 ]
 mainMenu.add(*objs)
 game.setToRun(mainMenu.run)
